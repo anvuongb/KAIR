@@ -17,6 +17,8 @@ from utils import utils_option as option
 from data.select_dataset import define_Dataset
 from models.select_model import define_Model
 
+import wandb
+
 
 '''
 # --------------------------------------------
@@ -58,6 +60,16 @@ def main():
     util.mkdirs((path for key, path in opt['path'].items() if 'pretrained' not in key))
 
     print("loading options from", opt['opt_path'])
+
+    wandb.init(
+        project=opt["task"],
+        config={
+            "dataroot_H": opt["datasets"]["train"]["dataroot_H"],
+            "dataroot_L": opt["datasets"]["train"]["dataroot_L"],
+            "test_dataroot_H": opt["datasets"]["test"]["dataroot_L"],
+            "test_dataroot_L": opt["datasets"]["test"]["dataroot_L"]
+        },
+    )
 
     # ----------------------------------------
     # update opt
@@ -191,6 +203,7 @@ def main():
                 message = '<epoch:{:3d}, iter:{:8,d}, lr:{:.3e}> '.format(epoch, current_step, model.current_learning_rate())
                 for k, v in logs.items():  # merge log information into message
                     message += '{:s}: {:.3e} '.format(k, v)
+                    wandb.log({"loss": v}, step=current_step)
                 logger.info(message)
 
             # -------------------------------

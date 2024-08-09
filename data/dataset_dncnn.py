@@ -30,6 +30,7 @@ class DatasetDnCNN(data.Dataset):
         # return None if input is None
         # ------------------------------------
         self.paths_H = util.get_image_paths(opt['dataroot_H'])
+        self.paths_L = util.get_image_paths(opt['dataroot_L'])
 
     def __getitem__(self, index):
 
@@ -37,63 +38,13 @@ class DatasetDnCNN(data.Dataset):
         # get H image
         # ------------------------------------
         H_path = self.paths_H[index]
+        L_path = self.paths_L[index]
+
         img_H = util.imread_uint(H_path, self.n_channels)
-
-        L_path = H_path
-
-        if self.opt['phase'] == 'train':
-            """
-            # --------------------------------
-            # get L/H patch pairs
-            # --------------------------------
-            """
-            H, W, _ = img_H.shape
-
-            # --------------------------------
-            # randomly crop the patch
-            # --------------------------------
-            rnd_h = random.randint(0, max(0, H - self.patch_size))
-            rnd_w = random.randint(0, max(0, W - self.patch_size))
-            patch_H = img_H[rnd_h:rnd_h + self.patch_size, rnd_w:rnd_w + self.patch_size, :]
-
-            # --------------------------------
-            # augmentation - flip, rotate
-            # --------------------------------
-            mode = random.randint(0, 7)
-            patch_H = util.augment_img(patch_H, mode=mode)
-
-            # --------------------------------
-            # HWC to CHW, numpy(uint) to tensor
-            # --------------------------------
-            img_H = util.uint2tensor3(patch_H)
-            img_L = img_H.clone()
-
-            # --------------------------------
-            # add noise
-            # --------------------------------
-            noise = torch.randn(img_L.size()).mul_(self.sigma/255.0)
-            img_L.add_(noise)
-
-        else:
-            """
-            # --------------------------------
-            # get L/H image pairs
-            # --------------------------------
-            """
-            img_H = util.uint2single(img_H)
-            img_L = np.copy(img_H)
-
-            # --------------------------------
-            # add noise
-            # --------------------------------
-            np.random.seed(seed=0)
-            img_L += np.random.normal(0, self.sigma_test/255.0, img_L.shape)
-
-            # --------------------------------
-            # HWC to CHW, numpy to tensor
-            # --------------------------------
-            img_L = util.single2tensor3(img_L)
-            img_H = util.single2tensor3(img_H)
+        img_L = util.imread_uint(L_path, self.n_channels)
+        
+        img_L = util.single2tensor3(img_L)
+        img_H = util.single2tensor3(img_H)
 
         return {'L': img_L, 'H': img_H, 'H_path': H_path, 'L_path': L_path}
 
