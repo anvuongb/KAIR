@@ -29,8 +29,8 @@ class DatasetDnCNN(data.Dataset):
         # get path of H
         # return None if input is None
         # ------------------------------------
-        self.paths_H = util.get_image_paths(opt['dataroot_H'])
-        self.paths_L = util.get_image_paths(opt['dataroot_L'])
+        self.paths_H = util.get_image_paths(opt['dataroot_H'], opt["test_images"])
+        self.paths_L = util.get_image_paths(opt['dataroot_L'], opt["test_images"])
 
     def __getitem__(self, index):
 

@@ -64,10 +64,10 @@ def surf(Z, cmap='rainbow', figsize=None):
 '''
 
 
-def get_image_paths(dataroot):
+def get_image_paths(dataroot, test=False):
     paths = None  # return None if dataroot is None
     if isinstance(dataroot, str):
-        paths = sorted(_get_paths_from_images(dataroot))
+        paths = sorted(_get_paths_from_images(dataroot, test))
     elif isinstance(dataroot, list):
         paths = []
         for i in dataroot:
@@ -75,14 +75,21 @@ def get_image_paths(dataroot):
     return paths
 
 
-def _get_paths_from_images(path):
+def _get_paths_from_images(path, test=False):
     assert os.path.isdir(path), '{:s} is not a valid directory'.format(path)
     images = []
-    for dirpath, _, fnames in sorted(os.walk(path)):
-        for fname in sorted(fnames):
-            if is_image_file(fname):
-                img_path = os.path.join(dirpath, fname)
-                images.append(img_path)
+    # for dirpath, _, fnames in sorted(os.walk(path)):
+    #     for fname in sorted(fnames):
+    #         if is_image_file(fname):
+    #             img_path = os.path.join(dirpath, fname)
+    #             images.append(img_path)
+    num_imgs = 100000
+    if test:
+        num_imgs = 2096
+    for i in range(num_imgs):
+        idx_str = str(i)+".png"
+        img_path = os.path.join(path, idx_str)
+        images.append(img_path)
     assert images, '{:s} has no valid image file'.format(path)
     return images
 

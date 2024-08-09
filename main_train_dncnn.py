@@ -125,6 +125,7 @@ def main():
     dataset_type = opt['datasets']['train']['dataset_type']
     for phase, dataset_opt in opt['datasets'].items():
         if phase == 'train':
+            dataset_opt["test_images"] = False
             train_set = define_Dataset(dataset_opt)
             train_size = int(math.ceil(len(train_set) / dataset_opt['dataloader_batch_size']))
             logger.info('Number of train images: {:,d}, iters: {:,d}'.format(len(train_set), train_size))
@@ -134,11 +135,15 @@ def main():
                                       num_workers=dataset_opt['dataloader_num_workers'],
                                       drop_last=True,
                                       pin_memory=True)
+            num_train_images = len(train_loader)*dataset_opt['dataloader_batch_size']
+            print(f"train_loader init'd, with {num_train_images} images")
         elif phase == 'test':
+            dataset_opt["test_images"] = True
             test_set = define_Dataset(dataset_opt)
             test_loader = DataLoader(test_set, batch_size=1,
                                      shuffle=False, num_workers=1,
                                      drop_last=False, pin_memory=True)
+            print(f"test_loader init'd, with {len(test_loader)} images")
         else:
             raise NotImplementedError("Phase [%s] is not recognized." % phase)
 
