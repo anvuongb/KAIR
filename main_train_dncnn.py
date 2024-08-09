@@ -43,7 +43,7 @@ from models.select_model import define_Model
 '''
 
 
-def main(json_path='options/train_dncnn.json'):
+def main():
 
     '''
     # ----------------------------------------
@@ -52,10 +52,12 @@ def main(json_path='options/train_dncnn.json'):
     '''
 
     parser = argparse.ArgumentParser()
-    parser.add_argument('-opt', type=str, default=json_path, help='Path to option JSON file.')
+    parser.add_argument('--opt', type=str, help='Path to option JSON file.')
 
     opt = option.parse(parser.parse_args().opt, is_train=True)
     util.mkdirs((path for key, path in opt['path'].items() if 'pretrained' not in key))
+
+    print("loading options from", opt['opt_path'])
 
     # ----------------------------------------
     # update opt
